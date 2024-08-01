@@ -5,18 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create Weekly Quiz</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
             darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Poppins', 'sans-serif'],
+                    },
+                },
+            },
         }
     </script>
 </head>
 <body class="bg-gray-100 dark:bg-gray-900 font-sans leading-normal tracking-normal transition-colors duration-200">
-    <div class="container mx-auto px-4 py-10">
-        <div class="max-w-2xl mx-auto bg-white dark:bg-gray-800 p-8 rounded shadow-lg">
-            <div class="flex justify-between items-center mb-6">
-                <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Create Weekly Quiz</h1>
-                <button id="darkModeToggle" class="p-2 rounded-full bg-gray-200 dark:bg-gray-600">
+    <div class="container mx-auto px-4 py-8 sm:py-12">
+        <div class="max-w-3xl mx-auto bg-white dark:bg-gray-800 p-6 sm:p-10 rounded-lg shadow-lg">
+            <div class="flex flex-col sm:flex-row justify-between items-center mb-8">
+                <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4 sm:mb-0">Create Weekly Quiz</h1>
+                <button id="darkModeToggle" class="p-2 rounded-full bg-gray-200 dark:bg-gray-600 transition-colors duration-200">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-800 dark:text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
                     </svg>
@@ -24,54 +32,84 @@
             </div>
             <form id="quizForm" class="space-y-6">
                 <div>
-                    <label for="title" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Form Title:</label>
+                    <label for="title" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Quiz Title:</label>
                     <input type="text" id="title" name="title" class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white" required>
                 </div>
                 <div>
-                    <label for="questions" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Questions JSON:</label>
+                    <label for="questions" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Questions JSON:</label>
                     <textarea id="questions" name="questions" rows="10" class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white" required></textarea>
                 </div>
-                <div class="flex space-x-4">
-                    <button type="button" onclick="createForm()" id="createButton" class="flex-1 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 cursor-pointer">Create Form</button>
-                    <button type="button" onclick="copyJsonTemplate()" class="flex-1 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 cursor-pointer">Copy JSON Template</button>
+                <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
+                    <button type="button" onclick="createForm()" id="createButton" class="flex-1 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 cursor-pointer transition-colors duration-200">Create Quiz</button>
+                    <button type="button" onclick="copyJsonTemplate()" class="flex-1 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 cursor-pointer transition-colors duration-200">Copy JSON Template</button>
                 </div>
             </form>
             <div id="result" class="mt-6 text-center"></div>
+            <div class="mt-8">
+                <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">How to use:</h2>
+                <ol class="list-decimal list-inside text-gray-700 dark:text-gray-300 space-y-2">
+                    <li>Enter a title for your quiz.</li>
+                    <li>Paste your questions in JSON format in the textarea.</li>
+                    <li>Click "Create Quiz" to generate your Google Form.</li>
+                    <li>Use "Copy JSON Template" for a sample question format.</li>
+                </ol>
+            </div>
         </div>
     </div>
 
     <script>
-        function createForm() {
-            var title = document.getElementById('title').value;
-            var questions = document.getElementById('questions').value;
-            var createButton = document.getElementById('createButton');
+    function createForm() {
+        var title = document.getElementById('title').value;
+        var questions = document.getElementById('questions').value;
+        var createButton = document.getElementById('createButton');
+        var resultDiv = document.getElementById('result');
 
-            // Indicate loading
-            createButton.disabled = true;
-            createButton.innerText = 'Creating...';
+        // Validate JSON
+        try {
+            JSON.parse(questions);
+        } catch (e) {
+            resultDiv.innerHTML = '<p class="text-red-600 dark:text-red-400 font-semibold">Invalid JSON in questions field. Please check your input.</p>';
+            return;
+        }
 
-            google.script.run.withSuccessHandler(function(url) {
+        // Indicate loading
+        createButton.disabled = true;
+        createButton.innerText = 'Creating... Please wait';
+        resultDiv.innerHTML = '';
+
+        google.script.run
+            .withSuccessHandler(function(url) {
                 createButton.disabled = false;
-                createButton.innerText = 'Create Form';
-                document.getElementById('result').innerHTML = `
-                    <p class="text-green-600 dark:text-green-400 font-semibold">
-                        Form created! <a href="${url}" target="_blank" class="text-blue-600 dark:text-blue-400 underline">Click here to open the form</a>
+                createButton.innerText = 'Create Quiz';
+                resultDiv.innerHTML = `
+                    <p class="text-green-600 dark:text-green-400 font-semibold mb-2">
+                        Quiz created successfully!
                     </p>
-                    <button onclick="copyToClipboard('${url}')" class="mt-2 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 cursor-pointer">Copy Link</button>
+                    <a href="${url}" target="_blank" class="mt-2 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 cursor-pointer transition-colors duration-200">Open Quiz</a>
+                    <button onclick="copyToClipboard('${url}')" id="copyLinkButton" class="mt-2 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 cursor-pointer transition-colors duration-200">Copy Link</button>
                 `;
-            }).createWeeklyQuiz(title, questions);
-        }
+            })
+            .withFailureHandler(function(error) {
+                createButton.disabled = false;
+                createButton.innerText = 'Create Quiz';
+                resultDiv.innerHTML = `<p class="text-red-600 dark:text-red-400 font-semibold">Error: ${error.message}</p>`;
+                console.error(error);
+            })
+            .createWeeklyQuiz(title, questions);
+    }
 
-        function copyToClipboard(text) {
-            navigator.clipboard.writeText(text).then(function() {
-                alert('Form link copied to clipboard!');
-            }, function(err) {
-                console.error('Could not copy text: ', err);
-            });
-        }
+    function copyToClipboard(text) {
+        navigator.clipboard.writeText(text).then(function() {
+            const copyButton = document.getElementById('copyLinkButton');
+            copyButton.innerText = 'Link Copied!';
+            copyButton.disabled = true;
+        }, function(err) {
+            console.error('Could not copy text: ', err);
+        });
+    }
 
-        function copyJsonTemplate() {
-            const jsonTemplate = `[
+    function copyJsonTemplate() {
+        const jsonTemplate = `[
   {
     "title": "What will be the output of the following JavaScript code?\\n\\nconsole.log(0.1 + 0.2 === 0.3);",
     "choices": ["true", "false", "undefined", "NaN"],
@@ -109,37 +147,43 @@
   }
 ]`;
 
-            navigator.clipboard.writeText(jsonTemplate).then(function() {
-                alert('JSON template copied to clipboard!');
-            }, function(err) {
-                console.error('Could not copy text: ', err);
-            });
-        }
-
-        // Dark mode toggle
-        const darkModeToggle = document.getElementById('darkModeToggle');
-        darkModeToggle.addEventListener('click', () => {
-            document.documentElement.classList.toggle('dark');
+        const copyButton = document.querySelector('button[onclick="copyJsonTemplate()"]');
+        navigator.clipboard.writeText(jsonTemplate).then(function() {
+            copyButton.innerText = 'Copied!';
+            copyButton.disabled = true;
+            setTimeout(() => {
+                copyButton.innerText = 'Copy JSON Template';
+                copyButton.disabled = false;
+            }, 3000);
+        }, function(err) {
+            console.error('Could not copy text: ', err);
         });
+    }
 
-        // Check for saved theme preference or use system preference
-        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-            document.documentElement.classList.add('dark');
-        } else {
-            document.documentElement.classList.remove('dark');
-        }
+    // Dark mode toggle
+    const darkModeToggle = document.getElementById('darkModeToggle');
+    darkModeToggle.addEventListener('click', () => {
+        document.documentElement.classList.toggle('dark');
+    });
 
-        // Update localStorage on theme change
-        const observer = new MutationObserver((mutations) => {
-            mutations.forEach((mutation) => {
-                if (mutation.attributeName === 'class') {
-                    const isDark = document.documentElement.classList.contains('dark');
-                    localStorage.theme = isDark ? 'dark' : 'light';
-                }
-            });
+    // Check for saved theme preference or use system preference
+    if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+    } else {
+        document.documentElement.classList.remove('dark');
+    }
+
+    // Update localStorage on theme change
+    const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+            if (mutation.attributeName === 'class') {
+                const isDark = document.documentElement.classList.contains('dark');
+                localStorage.theme = isDark ? 'dark' : 'light';
+            }
         });
+    });
 
-        observer.observe(document.documentElement, { attributes: true });
-    </script>
+    observer.observe(document.documentElement, { attributes: true });
+</script>
 </body>
 </html>
