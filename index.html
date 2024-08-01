@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Weekly Quiz</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 font-sans leading-normal tracking-normal">
+    <div class="container mx-auto px-4 mt-10">
+        <div class="max-w-2xl mx-auto bg-white p-8 rounded shadow-lg">
+            <h1 class="text-3xl font-bold mb-6 text-center">Create Weekly Quiz</h1>
+            <form id="quizForm" class="space-y-6">
+                <div>
+                    <label for="title" class="block text-sm font-medium text-gray-700">Form Title:</label>
+                    <input type="text" id="title" name="title" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required>
+                </div>
+                <div>
+                    <label for="questions" class="block text-sm font-medium text-gray-700">Questions JSON:</label>
+                    <textarea id="questions" name="questions" rows="10" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required></textarea>
+                </div>
+                <div>
+                    <button type="button" onclick="createForm()" id="createButton" class="w-full inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 cursor-pointer">Create Form</button>
+                </div>
+            </form>
+            <div id="result" class="mt-6 text-center"></div>
+        </div>
+    </div>
+
+    <script>
+        function createForm() {
+            var title = document.getElementById('title').value;
+            var questions = document.getElementById('questions').value;
+            var createButton = document.getElementById('createButton');
+
+            // Indicate loading
+            createButton.disabled = true;
+            createButton.innerText = 'Creating...';
+
+            google.script.run.withSuccessHandler(function(url) {
+                createButton.disabled = false;
+                createButton.innerText = 'Create Form';
+                document.getElementById('result').innerHTML = `
+                    <p class="text-green-600 font-semibold">
+                        Form created! <a href="${url}" target="_blank" class="text-blue-600 underline">Click here to open the form</a>
+                    </p>
+                    <button onclick="copyToClipboard('${url}')" class="mt-2 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 cursor-pointer">Copy Link</button>
+                `;
+            }).createWeeklyQuiz(title, questions);
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(function() {
+                alert('Form link copied to clipboard!');
+            }, function(err) {
+                console.error('Could not copy text: ', err);
+            });
+        }
+    </script>
+</body>
+</html>
