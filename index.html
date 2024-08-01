@@ -5,22 +5,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create Weekly Quiz</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+        }
+    </script>
 </head>
-<body class="bg-gray-100 font-sans leading-normal tracking-normal">
-    <div class="container mx-auto px-4 mt-10">
-        <div class="max-w-2xl mx-auto bg-white p-8 rounded shadow-lg">
-            <h1 class="text-3xl font-bold mb-6 text-center">Create Weekly Quiz</h1>
+<body class="bg-gray-100 dark:bg-gray-900 font-sans leading-normal tracking-normal transition-colors duration-200">
+    <div class="container mx-auto px-4 py-10">
+        <div class="max-w-2xl mx-auto bg-white dark:bg-gray-800 p-8 rounded shadow-lg">
+            <div class="flex justify-between items-center mb-6">
+                <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Create Weekly Quiz</h1>
+                <button id="darkModeToggle" class="p-2 rounded-full bg-gray-200 dark:bg-gray-600">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-800 dark:text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                    </svg>
+                </button>
+            </div>
             <form id="quizForm" class="space-y-6">
                 <div>
-                    <label for="title" class="block text-sm font-medium text-gray-700">Form Title:</label>
-                    <input type="text" id="title" name="title" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required>
+                    <label for="title" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Form Title:</label>
+                    <input type="text" id="title" name="title" class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white" required>
                 </div>
                 <div>
-                    <label for="questions" class="block text-sm font-medium text-gray-700">Questions JSON:</label>
-                    <textarea id="questions" name="questions" rows="10" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required></textarea>
+                    <label for="questions" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Questions JSON:</label>
+                    <textarea id="questions" name="questions" rows="10" class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white" required></textarea>
                 </div>
-                <div>
-                    <button type="button" onclick="createForm()" id="createButton" class="w-full inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 cursor-pointer">Create Form</button>
+                <div class="flex space-x-4">
+                    <button type="button" onclick="createForm()" id="createButton" class="flex-1 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 cursor-pointer">Create Form</button>
+                    <button type="button" onclick="copyJsonTemplate()" class="flex-1 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 cursor-pointer">Copy JSON Template</button>
                 </div>
             </form>
             <div id="result" class="mt-6 text-center"></div>
@@ -41,8 +54,8 @@
                 createButton.disabled = false;
                 createButton.innerText = 'Create Form';
                 document.getElementById('result').innerHTML = `
-                    <p class="text-green-600 font-semibold">
-                        Form created! <a href="${url}" target="_blank" class="text-blue-600 underline">Click here to open the form</a>
+                    <p class="text-green-600 dark:text-green-400 font-semibold">
+                        Form created! <a href="${url}" target="_blank" class="text-blue-600 dark:text-blue-400 underline">Click here to open the form</a>
                     </p>
                     <button onclick="copyToClipboard('${url}')" class="mt-2 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 cursor-pointer">Copy Link</button>
                 `;
@@ -56,6 +69,77 @@
                 console.error('Could not copy text: ', err);
             });
         }
+
+        function copyJsonTemplate() {
+            const jsonTemplate = `[
+  {
+    "title": "What will be the output of the following JavaScript code?\\n\\nconsole.log(0.1 + 0.2 === 0.3);",
+    "choices": ["true", "false", "undefined", "NaN"],
+    "correctAnswer": "false",
+    "explanation": "In JavaScript, due to floating-point precision issues, 0.1 + 0.2 does not exactly equal 0.3.",
+    "points": 1
+  },
+  {
+    "title": "Which keyword is used to create a function in Python?",
+    "choices": ["function", "def", "func", "create"],
+    "correctAnswer": "def",
+    "explanation": "In Python, the 'def' keyword is used to define a function.",
+    "points": 1
+  },
+  {
+    "title": "Which HTML element is used to define an interactive button?",
+    "choices": ["<input>", "<button>", "<a>", "<div>"],
+    "correctAnswer": "<button>",
+    "explanation": "The <button> element is used to create an interactive button in HTML.",
+    "points": 1
+  },
+  {
+    "title": "Which SQL clause is used to filter the results of a query?",
+    "choices": ["WHERE", "FILTER", "ORDER BY", "HAVING"],
+    "correctAnswer": "WHERE",
+    "explanation": "The WHERE clause is used to filter records based on a specified condition.",
+    "points": 1
+  },
+  {
+    "title": "In CSS, which property is used to change the font size of an element?",
+    "choices": ["font-size", "text-size", "font-style", "text-style"],
+    "correctAnswer": "font-size",
+    "explanation": "The font-size property in CSS is used to set the size of the font.",
+    "points": 1
+  }
+]`;
+
+            navigator.clipboard.writeText(jsonTemplate).then(function() {
+                alert('JSON template copied to clipboard!');
+            }, function(err) {
+                console.error('Could not copy text: ', err);
+            });
+        }
+
+        // Dark mode toggle
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        darkModeToggle.addEventListener('click', () => {
+            document.documentElement.classList.toggle('dark');
+        });
+
+        // Check for saved theme preference or use system preference
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+
+        // Update localStorage on theme change
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                if (mutation.attributeName === 'class') {
+                    const isDark = document.documentElement.classList.contains('dark');
+                    localStorage.theme = isDark ? 'dark' : 'light';
+                }
+            });
+        });
+
+        observer.observe(document.documentElement, { attributes: true });
     </script>
 </body>
 </html>

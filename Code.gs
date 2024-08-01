@@ -14,11 +14,40 @@ function createWeeklyQuiz(title, questions) {
   // Limit to one response per user
   form.setLimitOneResponsePerUser(true);
 
+  // Add description with rules and additional information
+  var description = "Welcome to the Gardi Vidyapith Weekly Quiz!\n\n" +
+                    "This quiz is provided by Gardi Vidyapith on a weekly basis to enhance students' knowledge, " +
+                    "improve their learning, and boost their placement prospects.\n\n" +
+                    "Please read the following rules and information carefully:\n\n" +
+                    "• This form can only be filled out once.\n" +
+                    "• Once submitted, you cannot change your answers.\n" +
+                    "• Points are awarded based on the difficulty of the questions.\n" +
+                    "• The default point value for each question is 1.\n" +
+                    "• You will be asked between 5 to 10 questions.\n" +
+                    "• There is no time limit for this quiz.\n" +
+                    "• PLEASE GIVE THIS TEST HONESTLY WITHOUT USING GOOGLE OR AI TOOLS.\n" +
+                    "• You will receive your scores on your verified email address shortly after submission.\n" +
+                    "• The quiz covers various topics relevant to your field of study and potential job requirements.\n" +
+                    "• Regular participation in these quizzes can significantly improve your knowledge and skills.\n" +
+                    "• If you encounter any technical issues, please contact the IT support team.\n" +
+                    "• Feel free to provide feedback on the quiz to help us improve future editions.\n\n" +
+                    "Remember, the goal is to learn and improve. Good luck and enjoy the quiz!";
+  
+  form.setDescription(description);
+
   // Parse the questions JSON
   var questionsArray = JSON.parse(questions);
 
   // Shuffle the questions
   questionsArray = shuffleArray(questionsArray);
+
+  // Limit to maximum 10 questions
+  questionsArray = questionsArray.slice(0, 10);
+
+  // Ensure at least 5 questions
+  if (questionsArray.length < 5) {
+    throw new Error("Not enough questions. Please provide at least 5 questions.");
+  }
 
   // Add questions to the form
   questionsArray.forEach(function(question) {
@@ -32,13 +61,15 @@ function createWeeklyQuiz(title, questions) {
       return item.createChoice(choice, choice === question.correctAnswer);
     }));
     
-    item.setPoints(question.points);
+    item.setPoints(question.points || 1);  // Default to 1 point if not specified
     item.setFeedbackForCorrect(FormApp.createFeedback().setText('Correct! ' + question.explanation).build());
     item.setFeedbackForIncorrect(FormApp.createFeedback().setText('Incorrect. ' + question.explanation).build());
   });
 
   // Set up confirmation message with score
-  form.setCustomClosedFormMessage('Thanks for submitting the quiz! Your responses have been recorded. You\'ll see your score on the next page.');
+  form.setCustomClosedFormMessage('Thank you for submitting the quiz! Your responses have been recorded. ' +
+                                  'You will receive your scores on your verified email address shortly. ' +
+                                  'Keep participating in these weekly quizzes to enhance your knowledge and skills!');
 
   // Release score immediately
   form.setPublishingSummary(true);
