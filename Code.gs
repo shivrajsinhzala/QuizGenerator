@@ -1,4 +1,3 @@
-// This function serves the HTML form
 function doGet() {
   return HtmlService.createHtmlOutputFromFile('index')
     .setTitle('Create Weekly Quiz')
@@ -32,7 +31,7 @@ function createWeeklyQuiz(title, questions) {
                       "• You will be asked between 5 to 10 questions.\n" +
                       "• There is no time limit for this quiz.\n" +
                       "• PLEASE GIVE THIS TEST HONESTLY WITHOUT USING GOOGLE OR AI TOOLS.\n" +
-                      "• You will receive your scores immediately after submission.\n" +
+                      "• Your scores will be manually reviewed and released. You will receive your results in your verified email account.\n" +
                       "• The quiz covers various topics relevant to your field of study and potential job requirements.\n" +
                       "• Regular participation in these quizzes can significantly improve your knowledge and skills.\n" +
                       "• If you encounter any technical issues, please contact the IT support team.\n" +
@@ -78,13 +77,13 @@ function createWeeklyQuiz(title, questions) {
       console.log("Added question " + (index + 1));
     });
 
-    // Set up confirmation message with score
-    form.setCustomClosedFormMessage('Thank you for submitting the quiz! Your responses have been recorded. ' +
-                                    'You can view your score and the correct answers now. ' +
-                                    'Keep participating in these weekly quizzes to enhance your knowledge and skills!');
+    // Set up confirmation message without score release
+    form.setConfirmationMessage('Thank you for submitting the quiz! Your responses have been recorded.\n\n' + 
+                                'Your scores will be manually reviewed and sent to your verified email account. Please check your email later for your results.\n\n' + 
+                                'Keep participating in these weekly quizzes to enhance your knowledge and skills!');
 
-    // Release score immediately
-    form.setPublishingSummary(true);
+    // Set to not release score immediately
+    form.setPublishingSummary(false);
     form.setShowLinkToRespondAgain(false);
 
     console.log("Quiz creation completed");
@@ -102,4 +101,3 @@ function shuffleArray(array) {
   }
   return array;
 }
-
